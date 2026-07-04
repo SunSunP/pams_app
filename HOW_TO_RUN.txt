@@ -1,0 +1,95 @@
+PAMS — Paragon Apartment Management System
+HOW TO START AND USE THE SOFTWARE
+===================================
+
+REQUIREMENTS
+------------
+- Python 3.10 or later, with Tkinter available (see REQUIRED_PACKAGES.txt
+  if you hit "No module named tkinter" on Linux).
+- No third-party packages need to be installed (see REQUIRED_PACKAGES.txt).
+
+
+STEP 1 — Create the database
+-----------------------------
+Open a terminal in this folder and run:
+
+    python3 seed_data.py
+
+This creates pams.db (SQLite) and fills it with mock data: apartments,
+tenants (including students), leases, invoices and maintenance requests
+across all four branches (Bristol, Cardiff, London, Manchester).
+
+You can re-run this command at any time to reset the database back to a
+clean demo state — it deletes and recreates pams.db.
+
+
+STEP 2 — Launch the application
+---------------------------------
+    python3 main.py
+
+A login window will appear.
+
+
+STEP 3 — Log in
+-----------------
+Use any of the demo accounts below. Each represents one of the five user
+roles described in the case study, so log in as different users to see
+different menus (role-based access control).
+
+    Username            Password     Role               Branch
+    ------------------  -----------  -----------------  ----------
+    fdesk.bristol        Pass123!     FrontDeskStaff      Bristol
+    fdesk.cardiff         Pass123!     FrontDeskStaff      Cardiff
+    finance.london        Pass123!     FinanceManager      London
+    maint.manchester        Pass123!     MaintenanceStaff    Manchester
+    admin.bristol          Pass123!     Administrator       Bristol
+    manager.hq             Pass123!     Manager             London
+
+All demo passwords are: Pass123!
+(Passwords are never stored in plain text in the database — they are
+hashed with PBKDF2-HMAC-SHA256 and a unique per-user salt. The values
+above are only the plain-text passwords used to log in via the GUI.)
+
+
+WHAT YOU CAN DO IN EACH ROLE
+------------------------------
+- FrontDeskStaff:  register tenants/students, view tenants, assign
+                   apartments (create leases), log maintenance requests,
+                   view apartments.
+- FinanceManager:  generate invoices, record payments, view invoices,
+                   view the financial summary report.
+- MaintenanceStaff: view open maintenance requests, resolve a request
+                    (logs cost, time taken, and the student/non-student
+                    cost share automatically).
+- Administrator:   add apartments, create new user accounts (any role),
+                   track leases (including terminating a lease early,
+                   which applies the 10% penalty rule), view a branch
+                   occupancy report.
+- Manager:         view the cross-branch occupancy report, the financial
+                   summary, the full apartment list, and a placeholder
+                   "expand to new city" screen.
+
+Use "Log out" in the sidebar to switch users without restarting the app.
+
+
+RUNNING THE AUTOMATED TESTS (Element 3 evidence)
+---------------------------------------------------
+    python3 -m unittest discover -s tests -v
+
+This runs 116 automated tests against the validation, model, security and
+repository layers (it does NOT touch pams.db — it uses a disposable
+temporary database). See tests/TEST_REPORT.md for the breakdown and
+tests/manual_gui_test_checklist.md for the manual bad-data scenarios to
+run through the live GUI for screenshot evidence.
+
+
+TROUBLESHOOTING
+-----------------
+"No database found" message on startup:
+    You haven't run `python3 seed_data.py` yet — see Step 1.
+
+"No module named tkinter" (Linux only):
+    Install the OS package — see REQUIRED_PACKAGES.txt.
+
+To completely reset all demo data:
+    Delete pams.db and re-run `python3 seed_data.py`.
