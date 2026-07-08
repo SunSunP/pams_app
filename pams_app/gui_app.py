@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter import font as tkfont
 from datetime import date
 
 import repositories as repo
@@ -74,6 +75,32 @@ class PamsApp(tk.Tk):
         self.container.pack(fill="both", expand=True)
         self.apply_theme()
 
+        # Text size scaling
+        self.font_scale_delta = 0
+        self.font_min_delta = -3
+        self.font_max_delta = 5
+        self.BASE_FONT_SIZES = {
+            "TkDefaultFont": 10,
+            "TkTextFont": 10,
+            "TkHeadingFont": 10,
+            "TkMenuFont": 10,
+            "TkFixedFont": 10,
+        }
+        self._named_fonts = {}
+        for name, base_size in self.BASE_FONT_SIZES.items():
+            try:
+                f = tkfont.nametofont(name)
+                f.configure(size=base_size)
+                self._named_fonts[name] = f
+            except tk.TclError:
+                pass
+
+        self.font_title = tkfont.Font(family="Segoe UI", size=18, weight="bold")
+        self.font_heading = tkfont.Font(family="Segoe UI", size=14, weight="bold")
+        self.font_sidebar = tkfont.Font(family="Segoe UI", size=10, weight="bold")
+        self.font_mono = tkfont.Font(family="Consolas", size=12)
+        self.apply_font_scale()
+
         self.user_repo = repo.UserRepository()
         self.tenant_repo = repo.TenantRepository()
         self.apartment_repo = repo.ApartmentRepository()
@@ -87,7 +114,8 @@ class PamsApp(tk.Tk):
     def clear(self):
         for widget in self.container.winfo_children():
             widget.destroy()
- 
+
+    #  Theming 
 
     def apply_theme(self):
         theme = DARK_THEME if self.dark_mode else LIGHT_THEME
@@ -137,6 +165,27 @@ class PamsApp(tk.Tk):
             foreground=[("readonly", theme["entry_fg"])],
         )
 
+    #  Text size 
+
+    def apply_font_scale(self):
+        delta = self.font_scale_delta
+        for name, f in self._named_fonts.items():
+            f.configure(size=self.BASE_FONT_SIZES[name] + delta)
+        self.font_title.configure(size=18 + delta)
+        self.font_heading.configure(size=14 + delta)
+        self.font_sidebar.configure(size=10 + delta)
+        self.font_mono.configure(size=12 + delta)
+
+    def increase_font_size(self):
+        if self.font_scale_delta < self.font_max_delta:
+            self.font_scale_delta += 1
+            self.apply_font_scale()
+
+    def decrease_font_size(self):
+        if self.font_scale_delta > self.font_min_delta:
+            self.font_scale_delta -= 1
+            self.apply_font_scale()
+
     def toggle_dark_mode(self):
         self.dark_mode = not self.dark_mode
         self.apply_theme()
@@ -146,7 +195,6 @@ class PamsApp(tk.Tk):
             self.show_dashboard(preserve_screen=True)
 
     def _nav(self, handler):
-
         def _go():
             self.current_screen = handler
             handler()
@@ -160,7 +208,7 @@ class PamsApp(tk.Tk):
         frame = tk.Frame(self.container, padx=40, pady=40, bg=theme["bg"])
         frame.pack(expand=True)
 
-        tk.Label(frame, text="PAMS Login", font=("Segoe UI", 18, "bold"),
+        tk.Label(frame, text="PAMS Login", font=self.font_title,
                  bg=theme["bg"], fg=theme["fg"]).grid(
             row=0, column=0, columnspan=2, pady=(0, 20)
         )
@@ -194,13 +242,23 @@ class PamsApp(tk.Tk):
             row=3, column=0, columnspan=2, pady=(16, 4)
         )
 
-        toggle_text = " Switch to light mode" if self.dark_mode else " Switch to dark mode"
+        toggle_text = "Switch to Light Mode" if self.dark_mode else "Switch to Dark Mode"
         tk.Button(frame, text=toggle_text, relief="flat", bd=0,
                   bg=theme["bg"], fg=theme["muted"],
                   activebackground=theme["bg"], activeforeground=theme["fg"],
                   command=self.toggle_dark_mode).grid(
             row=4, column=0, columnspan=2, pady=(14, 0)
         )
+
+        font_row = tk.Frame(frame, bg=theme["bg"])
+        font_row.grid(row=5, column=0, columnspan=2, pady=(8, 0))
+        tk.Label(font_row, text="Text size", bg=theme["bg"], fg=theme["muted"]).pack(side="left")
+        tk.Button(font_row, text="A-", width=3, relief="flat",
+                  bg=theme["button_bg"], fg=theme["button_fg"],
+                  command=self.decrease_font_size).pack(side="left", padx=(8, 2))
+        tk.Button(font_row, text="A+", width=3, relief="flat",
+                  bg=theme["button_bg"], fg=theme["button_fg"],
+                  command=self.increase_font_size).pack(side="left")
 
 
     #  Dashboard 
@@ -219,7 +277,7 @@ class PamsApp(tk.Tk):
             sidebar, bg=theme["panel_bg"], fg=theme["panel_fg"],
             text=f"{self.current_user.full_name}\n{self.current_user.role}\n"
                  f"{self.current_user.branch_location}",
-            justify="left", font=("Segoe UI", 10, "bold"), pady=16
+            justify="left", font=self.font_sidebar, pady=16
         ).pack(fill="x", padx=10)
 
         self.content = tk.Frame(root, padx=16, pady=16, bg=theme["bg"])
@@ -240,7 +298,7 @@ class PamsApp(tk.Tk):
             fill="x", padx=10, pady=(30, 4)
         )
 
-        toggle_text = " Light mode" if self.dark_mode else " Dark mode"
+        toggle_text = "Switch to Light Mode" if self.dark_mode else "Switch to Dark Mode"
         tk.Button(sidebar, text=toggle_text, anchor="w", relief="flat",
                   bg=theme["toggle_bg"], fg=theme["toggle_fg"],
                   activebackground=theme["menu_button_active_bg"],
@@ -249,11 +307,27 @@ class PamsApp(tk.Tk):
             fill="x", padx=10, pady=(4, 10), side="bottom"
         )
 
+        font_row = tk.Frame(sidebar, bg=theme["panel_bg"])
+        font_row.pack(fill="x", padx=10, pady=(4, 0), side="bottom")
+        tk.Label(font_row, text="Text size", bg=theme["panel_bg"], fg=theme["panel_fg"]).pack(
+            side="left"
+        )
+        tk.Button(font_row, text="A+", width=3, relief="flat",
+                  bg=theme["menu_button_bg"], fg=theme["menu_button_fg"],
+                  activebackground=theme["menu_button_active_bg"],
+                  activeforeground=theme["menu_button_fg"],
+                  command=self.increase_font_size).pack(side="right", padx=(2, 0))
+        tk.Button(font_row, text="A-", width=3, relief="flat",
+                  bg=theme["menu_button_bg"], fg=theme["menu_button_fg"],
+                  activebackground=theme["menu_button_active_bg"],
+                  activeforeground=theme["menu_button_fg"],
+                  command=self.decrease_font_size).pack(side="right")
+
         if preserve_screen and self.current_screen in dict(actions).values():
             self.current_screen()
         else:
             self.current_screen = actions[0][1]
-            self.current_screen()  
+            self.current_screen()  # show first screen by default
 
     def _menu_for_role(self, role):
         if role == "FrontDeskStaff":
@@ -315,7 +389,7 @@ class PamsApp(tk.Tk):
 
     def screen_register_tenant(self):
         self.clear_content()
-        tk.Label(self.content, text="Register tenant", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Register tenant", font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -369,7 +443,7 @@ class PamsApp(tk.Tk):
 
     def screen_tenant_list(self):
         self.clear_content()
-        tk.Label(self.content, text="Tenants", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Tenants", font=self.font_heading).pack(anchor="w")
         rows = self.tenant_repo.list_tenants()
         data = [(r["tenant_id"], r["full_name"], r["ni_number"], r["email"],
                  "Yes" if r["is_student"] else "No", r["branch_location"])
@@ -382,7 +456,7 @@ class PamsApp(tk.Tk):
     def screen_assign_apartment(self):
         self.clear_content()
         tk.Label(self.content, text="Assign apartment / create lease",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -422,7 +496,7 @@ class PamsApp(tk.Tk):
     def screen_log_maintenance(self):
         self.clear_content()
         tk.Label(self.content, text="Log maintenance request",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -457,7 +531,7 @@ class PamsApp(tk.Tk):
 
     def screen_apartment_list(self):
         self.clear_content()
-        tk.Label(self.content, text="Apartments", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Apartments", font=self.font_heading).pack(anchor="w")
         rows = self.apartment_repo.list_apartments()
         data = [(r["apartment_id"], r["branch_location"], r["apartment_type"],
                  f"£{r['monthly_rent']:.2f}", r["num_rooms"],
@@ -472,7 +546,7 @@ class PamsApp(tk.Tk):
 
     def screen_generate_invoice(self):
         self.clear_content()
-        tk.Label(self.content, text="Generate invoice", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Generate invoice", font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -500,7 +574,7 @@ class PamsApp(tk.Tk):
 
     def screen_record_payment(self):
         self.clear_content()
-        tk.Label(self.content, text="Record payment", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Record payment", font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -538,7 +612,7 @@ class PamsApp(tk.Tk):
 
     def screen_invoice_list(self):
         self.clear_content()
-        tk.Label(self.content, text="Invoices", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Invoices", font=self.font_heading).pack(anchor="w")
         self.billing_repo.refresh_late_invoices()
         rows = self.billing_repo.list_invoices()
         data = [(r["invoice_id"], r["lease_id"], f"£{r['amount']:.2f}",
@@ -550,7 +624,7 @@ class PamsApp(tk.Tk):
 
     def screen_financial_report(self):
         self.clear_content()
-        tk.Label(self.content, text="Financial summary", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Financial summary", font=self.font_heading).pack(anchor="w")
         try:
             summary = self.report_repo.financial_summary(current_user=self.current_user)
         except sec.PermissionError_ as e:
@@ -561,7 +635,7 @@ class PamsApp(tk.Tk):
             f"Pending rent:        £{summary['pending_rent']:.2f}\n"
             f"Maintenance costs:   £{summary['maintenance_cost']:.2f}"
         )
-        tk.Label(self.content, text=text, font=("Consolas", 12), justify="left",
+        tk.Label(self.content, text=text, font=self.font_mono, justify="left",
                  pady=20).pack(anchor="w")
 
     #  Maintenance screens 
@@ -569,7 +643,7 @@ class PamsApp(tk.Tk):
     def screen_maintenance_open(self):
         self.clear_content()
         tk.Label(self.content, text="Open / scheduled requests",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         rows = [r for r in self.maintenance_repo.list_requests() if r["status"] != "resolved"]
         data = [(r["request_id"], r["tenant_id"], r["apartment_id"], r["description"],
                  r["priority"], r["reported_date"], r["status"]) for r in rows]
@@ -581,7 +655,7 @@ class PamsApp(tk.Tk):
     def screen_resolve_maintenance(self):
         self.clear_content()
         tk.Label(self.content, text="Resolve maintenance request",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -620,7 +694,7 @@ class PamsApp(tk.Tk):
 
     def screen_apartment_admin(self):
         self.clear_content()
-        tk.Label(self.content, text="Manage apartments", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Manage apartments", font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -673,7 +747,7 @@ class PamsApp(tk.Tk):
 
     def screen_user_admin(self):
         self.clear_content()
-        tk.Label(self.content, text="Manage users", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Manage users", font=self.font_heading).pack(anchor="w")
         form = tk.Frame(self.content, pady=10)
         form.pack(anchor="w")
 
@@ -722,7 +796,7 @@ class PamsApp(tk.Tk):
 
     def screen_lease_tracking(self):
         self.clear_content()
-        tk.Label(self.content, text="Lease tracking", font=("Segoe UI", 14, "bold")).pack(anchor="w")
+        tk.Label(self.content, text="Lease tracking", font=self.font_heading).pack(anchor="w")
         rows = self.lease_repo.list_leases()
         data = [(r["lease_id"], r["tenant_name"], r["apartment_type"],
                  r["branch_location"], r["start_date"], r["end_date"], r["status"])
@@ -761,7 +835,7 @@ class PamsApp(tk.Tk):
     def screen_branch_report(self):
         self.clear_content()
         tk.Label(self.content, text=f"Branch report — {self.current_user.branch_location}",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         rows = self.apartment_repo.list_apartments(
             branch_location=self.current_user.branch_location
         )
@@ -776,7 +850,7 @@ class PamsApp(tk.Tk):
     def screen_occupancy_report(self):
         self.clear_content()
         tk.Label(self.content, text="Occupancy report (all branches)",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         try:
             rows = self.report_repo.occupancy_report(current_user=self.current_user)
         except sec.PermissionError_ as e:
@@ -790,7 +864,7 @@ class PamsApp(tk.Tk):
     def screen_expand_city(self):
         self.clear_content()
         tk.Label(self.content, text="Expand to a new city",
-                 font=("Segoe UI", 14, "bold")).pack(anchor="w")
+                 font=self.font_heading).pack(anchor="w")
         tk.Label(
             self.content,
             text="This is a placeholder workflow: in a full release this screen would\n"
