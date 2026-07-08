@@ -5,7 +5,7 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import database as db
+import pams_app.database as db
 
 
 class RepositoryTestCase(unittest.TestCase):
@@ -20,10 +20,10 @@ class RepositoryTestCase(unittest.TestCase):
         db.init_db(reset=True)
 
         # Import repositories AFTER patching DB_PATH so its module-level
-        import repositories as repo
-        import models as m
-        import security as sec
-        import validators as v
+        import pams_app.repositories as repo
+        import pams_app.models as m
+        import pams_app.security as sec
+        import pams_app.validators as v
         self.repo = repo
         self.m = m
         self.sec = sec

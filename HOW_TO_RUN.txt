@@ -4,8 +4,7 @@ HOW TO START AND USE THE SOFTWARE
 
 REQUIREMENTS
 ------------
-- Python 3.10 or later, with Tkinter available (see REQUIRED_PACKAGES.txt
-  if you hit "No module named tkinter" on Linux).
+- Python 3.10 or later, with Tkinter available 
 - No third-party packages need to be installed (see REQUIRED_PACKAGES.txt).
 
 

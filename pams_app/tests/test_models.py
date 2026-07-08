@@ -4,8 +4,8 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import models as m
-import validators as v
+import pams_app.models as m
+import pams_app.validators as v
 
 
 VALID_TENANT_KWARGS = dict(

@@ -4,7 +4,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import validators as v
+import pams_app.validators as v
 
 
 class TestNiNumberValidation(unittest.TestCase):
