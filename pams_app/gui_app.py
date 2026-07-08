@@ -10,6 +10,54 @@ BRANCHES = ["Bristol", "Cardiff", "London", "Manchester"]
 ROLES = ["FrontDeskStaff", "FinanceManager", "MaintenanceStaff", "Administrator", "Manager"]
 STUDY_LEVELS = ["Undergraduate", "Masters", "PhD"]
 
+LIGHT_THEME = {
+    "bg": "#f5f5f5",
+    "fg": "#1a1a1a",
+    "entry_bg": "#ffffff",
+    "entry_fg": "#1a1a1a",
+    "button_bg": "#e1e1e1",
+    "button_fg": "#1a1a1a",
+    "active_bg": "#d5d5d5",
+    "panel_bg": "#1d3557",
+    "panel_fg": "#ffffff",
+    "menu_button_bg": "#457b9d",
+    "menu_button_fg": "#ffffff",
+    "menu_button_active_bg": "#1d3557",
+    "logout_bg": "#e63946",
+    "logout_fg": "#ffffff",
+    "toggle_bg": "#a8dadc",
+    "toggle_fg": "#1d3557",
+    "muted": "#6c6c6c",
+    "tree_bg": "#ffffff",
+    "tree_fg": "#1a1a1a",
+    "tree_heading_bg": "#e6e6e6",
+    "tree_select_bg": "#457b9d",
+}
+
+DARK_THEME = {
+    "bg": "#1e1e2e",
+    "fg": "#e8e8e8",
+    "entry_bg": "#2b2b3d",
+    "entry_fg": "#f0f0f0",
+    "button_bg": "#3a3a4d",
+    "button_fg": "#f0f0f0",
+    "active_bg": "#4a4a60",
+    "panel_bg": "#11111b",
+    "panel_fg": "#f0f0f0",
+    "menu_button_bg": "#2c3e6b",
+    "menu_button_fg": "#f0f0f0",
+    "menu_button_active_bg": "#11111b",
+    "logout_bg": "#b83244",
+    "logout_fg": "#ffffff",
+    "toggle_bg": "#3a3a4d",
+    "toggle_fg": "#f0f0f0",
+    "muted": "#9a9aa5",
+    "tree_bg": "#26263a",
+    "tree_fg": "#f0f0f0",
+    "tree_heading_bg": "#33334a",
+    "tree_select_bg": "#3d5a80",
+}
+
 
 class PamsApp(tk.Tk):
     def __init__(self):
@@ -18,9 +66,13 @@ class PamsApp(tk.Tk):
         self.geometry("960x620")
         self.minsize(860, 560)
         self.current_user = None
+        self.current_screen = None
+        self.dark_mode = False
+        self.theme = LIGHT_THEME
 
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
+        self.apply_theme()
 
         self.user_repo = repo.UserRepository()
         self.tenant_repo = repo.TenantRepository()
@@ -35,22 +87,95 @@ class PamsApp(tk.Tk):
     def clear(self):
         for widget in self.container.winfo_children():
             widget.destroy()
+ 
+
+    def apply_theme(self):
+        theme = DARK_THEME if self.dark_mode else LIGHT_THEME
+        self.theme = theme
+
+        self.configure(bg=theme["bg"])
+        self.container.configure(bg=theme["bg"])
+
+        self.option_add("*Background", theme["bg"])
+        self.option_add("*Foreground", theme["fg"])
+        self.option_add("*activeBackground", theme["active_bg"])
+        self.option_add("*activeForeground", theme["fg"])
+        self.option_add("*Entry.background", theme["entry_bg"])
+        self.option_add("*Entry.foreground", theme["entry_fg"])
+        self.option_add("*Entry.insertBackground", theme["entry_fg"])
+        self.option_add("*Button.background", theme["button_bg"])
+        self.option_add("*Button.foreground", theme["button_fg"])
+        self.option_add("*Checkbutton.background", theme["bg"])
+        self.option_add("*Checkbutton.foreground", theme["fg"])
+        self.option_add("*Checkbutton.selectColor", theme["entry_bg"])
+
+        style = ttk.Style(self)
+        try:
+            style.theme_use("clam")
+        except tk.TclError:
+            pass
+        style.configure(
+            "Treeview", background=theme["tree_bg"], fieldbackground=theme["tree_bg"],
+            foreground=theme["tree_fg"], bordercolor=theme["tree_heading_bg"]
+        )
+        style.map(
+            "Treeview", background=[("selected", theme["tree_select_bg"])],
+            foreground=[("selected", "#ffffff")]
+        )
+        style.configure(
+            "Treeview.Heading", background=theme["tree_heading_bg"], foreground=theme["fg"],
+            relief="flat"
+        )
+        style.map("Treeview.Heading", background=[("active", theme["tree_heading_bg"])])
+        style.configure(
+            "TCombobox", fieldbackground=theme["entry_bg"], background=theme["entry_bg"],
+            foreground=theme["entry_fg"], arrowcolor=theme["fg"]
+        )
+        style.map(
+            "TCombobox",
+            fieldbackground=[("readonly", theme["entry_bg"])],
+            foreground=[("readonly", theme["entry_fg"])],
+        )
+
+    def toggle_dark_mode(self):
+        self.dark_mode = not self.dark_mode
+        self.apply_theme()
+        if self.current_user is None:
+            self.show_login()
+        else:
+            self.show_dashboard(preserve_screen=True)
+
+    def _nav(self, handler):
+
+        def _go():
+            self.current_screen = handler
+            handler()
+        return _go
 
     def show_login(self):
         self.current_user = None
+        self.current_screen = None
         self.clear()
-        frame = tk.Frame(self.container, padx=40, pady=40)
+        theme = self.theme
+        frame = tk.Frame(self.container, padx=40, pady=40, bg=theme["bg"])
         frame.pack(expand=True)
 
-        tk.Label(frame, text="PAMS Login", font=("Segoe UI", 18, "bold")).grid(
+        tk.Label(frame, text="PAMS Login", font=("Segoe UI", 18, "bold"),
+                 bg=theme["bg"], fg=theme["fg"]).grid(
             row=0, column=0, columnspan=2, pady=(0, 20)
         )
-        tk.Label(frame, text="Username").grid(row=1, column=0, sticky="e", pady=6)
-        username_entry = tk.Entry(frame, width=28)
+        tk.Label(frame, text="Username", bg=theme["bg"], fg=theme["fg"]).grid(
+            row=1, column=0, sticky="e", pady=6
+        )
+        username_entry = tk.Entry(frame, width=28, bg=theme["entry_bg"], fg=theme["entry_fg"],
+                                   insertbackground=theme["entry_fg"])
         username_entry.grid(row=1, column=1, pady=6)
 
-        tk.Label(frame, text="Password").grid(row=2, column=0, sticky="e", pady=6)
-        password_entry = tk.Entry(frame, width=28, show="*")
+        tk.Label(frame, text="Password", bg=theme["bg"], fg=theme["fg"]).grid(
+            row=2, column=0, sticky="e", pady=6
+        )
+        password_entry = tk.Entry(frame, width=28, show="*", bg=theme["entry_bg"],
+                                   fg=theme["entry_fg"], insertbackground=theme["entry_fg"])
         password_entry.grid(row=2, column=1, pady=6)
 
         def attempt_login(event=None):
@@ -64,44 +189,71 @@ class PamsApp(tk.Tk):
             self.show_dashboard()
 
         password_entry.bind("<Return>", attempt_login)
-        tk.Button(frame, text="Log in", width=14, command=attempt_login).grid(
+        tk.Button(frame, text="Log in", width=14, command=attempt_login,
+                  bg=theme["button_bg"], fg=theme["button_fg"]).grid(
             row=3, column=0, columnspan=2, pady=(16, 4)
+        )
+
+        toggle_text = " Switch to light mode" if self.dark_mode else " Switch to dark mode"
+        tk.Button(frame, text=toggle_text, relief="flat", bd=0,
+                  bg=theme["bg"], fg=theme["muted"],
+                  activebackground=theme["bg"], activeforeground=theme["fg"],
+                  command=self.toggle_dark_mode).grid(
+            row=4, column=0, columnspan=2, pady=(14, 0)
         )
 
 
     #  Dashboard 
 
-    def show_dashboard(self):
+    def show_dashboard(self, preserve_screen=False):
         self.clear()
-        root = tk.Frame(self.container)
+        theme = self.theme
+        root = tk.Frame(self.container, bg=theme["bg"])
         root.pack(fill="both", expand=True)
 
-        sidebar = tk.Frame(root, width=200, bg="#1d3557")
+        sidebar = tk.Frame(root, width=200, bg=theme["panel_bg"])
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
 
         tk.Label(
-            sidebar, bg="#1d3557", fg="white",
+            sidebar, bg=theme["panel_bg"], fg=theme["panel_fg"],
             text=f"{self.current_user.full_name}\n{self.current_user.role}\n"
                  f"{self.current_user.branch_location}",
             justify="left", font=("Segoe UI", 10, "bold"), pady=16
         ).pack(fill="x", padx=10)
 
-        self.content = tk.Frame(root, padx=16, pady=16)
+        self.content = tk.Frame(root, padx=16, pady=16, bg=theme["bg"])
         self.content.pack(side="right", fill="both", expand=True)
 
         actions = self._menu_for_role(self.current_user.role)
         for label, handler in actions:
             tk.Button(sidebar, text=label, anchor="w", relief="flat",
-                      bg="#457b9d", fg="white", activebackground="#1d3557",
-                      command=handler).pack(fill="x", padx=10, pady=4)
+                      bg=theme["menu_button_bg"], fg=theme["menu_button_fg"],
+                      activebackground=theme["menu_button_active_bg"],
+                      activeforeground=theme["menu_button_fg"],
+                      command=self._nav(handler)).pack(fill="x", padx=10, pady=4)
 
         tk.Button(sidebar, text="Log out", anchor="w", relief="flat",
-                  bg="#e63946", fg="white", command=self.show_login).pack(
+                  bg=theme["logout_bg"], fg=theme["logout_fg"],
+                  activebackground=theme["logout_bg"], activeforeground=theme["logout_fg"],
+                  command=self.show_login).pack(
             fill="x", padx=10, pady=(30, 4)
         )
 
-        actions[0][1]()  # show first screen by default
+        toggle_text = " Light mode" if self.dark_mode else " Dark mode"
+        tk.Button(sidebar, text=toggle_text, anchor="w", relief="flat",
+                  bg=theme["toggle_bg"], fg=theme["toggle_fg"],
+                  activebackground=theme["menu_button_active_bg"],
+                  activeforeground=theme["toggle_fg"],
+                  command=self.toggle_dark_mode).pack(
+            fill="x", padx=10, pady=(4, 10), side="bottom"
+        )
+
+        if preserve_screen and self.current_screen in dict(actions).values():
+            self.current_screen()
+        else:
+            self.current_screen = actions[0][1]
+            self.current_screen()  
 
     def _menu_for_role(self, role):
         if role == "FrontDeskStaff":
@@ -265,7 +417,7 @@ class PamsApp(tk.Tk):
             row=4, column=1, sticky="w", pady=10
         )
         tk.Label(self.content, text="Tip: check Apartments / Tenants tabs for valid IDs.",
-                 fg="grey").pack(anchor="w")
+                 fg=self.theme["muted"]).pack(anchor="w")
 
     def screen_log_maintenance(self):
         self.clear_content()

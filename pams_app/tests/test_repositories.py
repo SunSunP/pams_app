@@ -9,7 +9,7 @@ import database as db
 
 
 class RepositoryTestCase(unittest.TestCase):
-    """Base class: points database.DB_PATH at a fresh temp file per test."""
+    #Base class: points database.DB_PATH at a fresh temp file per test.
 
     def setUp(self):
         self._tmp_fd, self._tmp_path = tempfile.mkstemp(suffix=".db")
@@ -71,7 +71,7 @@ class RepositoryTestCase(unittest.TestCase):
 
 
 class _AdminBootstrap:
-    """Stand-in user with Administrator role, used only to seed test fixtures."""
+    #Stand-in user with Administrator role, used only to seed test fixtures.
     role = "Administrator"
 
 

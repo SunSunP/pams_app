@@ -5,7 +5,7 @@ import validators as v
 #  Users & roles (inheritance hierarchy) 
 
 class User:
-    """Base class for all system users. Concrete roles subclass this."""
+    #Default user class for all system users. Roles subclass this.
 
     ROLE_NAME = "User"
 
@@ -56,7 +56,7 @@ ROLE_CLASSES = {
 
 
 def build_user(role: str, **kwargs) -> User:
-    """Factory that instantiates the correct User subclass for a given role."""
+    #Factory that instantiates the correct User subclass for a given role.
     cls = ROLE_CLASSES.get(role)
     if cls is None:
         raise v.ValidationError(f"Unknown role '{role}'")

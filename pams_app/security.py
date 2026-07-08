@@ -7,7 +7,7 @@ PBKDF2_ITERATIONS = 200_000
 
 
 def hash_password(plain_password: str, salt: bytes = None) -> tuple:
-    """Return (hash_hex, salt_hex) for the given plain text password."""
+    #Return (hash_hex, salt_hex) for the given plain text password.
     if salt is None:
         salt = os.urandom(16)
     pw_hash = hashlib.pbkdf2_hmac(
@@ -52,7 +52,7 @@ PERMISSIONS = {
 
 
 class PermissionError_(Exception):
-    """Raised when a user attempts an action outside their role's permissions."""
+    #Raised when a user attempts an action outside their role's permissions.
     pass
 
 
@@ -61,11 +61,8 @@ def has_permission(role: str, action: str) -> bool:
 
 
 def requires_role(action: str):
-    """Decorator used on repository / service methods to enforce RBAC.
-
-    The decorated function must accept a `current_user` keyword/positional
-    argument that exposes a `.role` attribute.
-    """
+    #Decorator services methods to enforce Role based access control.
+    
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
