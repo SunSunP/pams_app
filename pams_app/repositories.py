@@ -326,30 +326,28 @@ class BillingRepository:
         return invoice
 
     @sec.requires_role("record_payment")
-    def record_payment(self, invoice_id, amount, method="bank_transfer",
-                        current_user=None):
+    def record_payment(self, invoice_id, amount, method="bank_transfer", current_user=None):
         conn = db.get_connection()
-        row = conn.execute(
-            "SELECT * FROM invoices WHERE invoice_id = ?", (invoice_id,)
-        ).fetchone()
-        if row is None:
+        try:
+            row = conn.execute("SELECT * FROM invoices WHERE invoice_id = ?", (invoice_id,)).fetchone()
+            if row is None:
+                raise v.ValidationError(f"No invoice with id {invoice_id}")
+            invoice = m.Invoice(row["invoice_id"], row["lease_id"], row["amount"],
+                                row["issue_date"], row["due_date"], row["status"])
+            invoice.record_payment(amount)
+            payment_date = datetime.today().strftime("%Y-%m-%d")
+            payment = m.Payment(None, invoice_id, amount, payment_date, method)
+            conn.execute(
+                "INSERT INTO payments (invoice_id, amount, payment_date, method) "
+                "VALUES (?,?,?,?)", (invoice_id, payment.amount, payment_date, method)
+            )
+            conn.execute(
+                "UPDATE invoices SET status='paid' WHERE invoice_id=?", (invoice_id,)
+            )
+            conn.commit()
+            return payment
+        finally:
             conn.close()
-            raise v.ValidationError(f"No invoice with id {invoice_id}")
-        invoice = m.Invoice(row["invoice_id"], row["lease_id"], row["amount"],
-                             row["issue_date"], row["due_date"], row["status"])
-        invoice.record_payment(amount)
-        payment_date = datetime.today().strftime("%Y-%m-%d")
-        payment = m.Payment(None, invoice_id, amount, payment_date, method)
-        conn.execute(
-            "INSERT INTO payments (invoice_id, amount, payment_date, method) "
-            "VALUES (?,?,?,?)", (invoice_id, payment.amount, payment_date, method)
-        )
-        conn.execute(
-            "UPDATE invoices SET status='paid' WHERE invoice_id=?", (invoice_id,)
-        )
-        conn.commit()
-        conn.close()
-        return payment
 
     def refresh_late_invoices(self):
         """Marks any pending invoice past its due date as 'late' (Element 6)."""

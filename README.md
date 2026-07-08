@@ -1,8 +1,7 @@
 # PAMS — Paragon Apartment Management System
 
 A desktop application (Python + Tkinter + SQLite) built for the Advanced
-Systems Development case study (Element 2: System Development and
-Methodology).
+Systems Development case study
 
 ## Running it
 
@@ -31,8 +30,8 @@ Password for every account: `Password`
 
 ## Architecture
 
-The codebase is layered to match the class diagram produced in Element 1
-and to keep business logic independently testable for Element 3:
+The codebase is layered to match the class diagram
+and to keep business logic independently testable :
 
 ```
 database.py       SQLite schema + connection helper
