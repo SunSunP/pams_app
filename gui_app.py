@@ -67,13 +67,9 @@ class PamsApp(tk.Tk):
         tk.Button(frame, text="Log in", width=14, command=attempt_login).grid(
             row=3, column=0, columnspan=2, pady=(16, 4)
         )
-        tk.Label(
-            frame, text="Demo accounts: fdesk.bristol / finance.london /\n"
-                        "maint.manchester / admin.bristol / manager.hq\nPassword: Pass123!",
-            fg="grey"
-        ).grid(row=4, column=0, columnspan=2, pady=(20, 0))
 
-    # Dashboard
+
+    #  Dashboard 
 
     def show_dashboard(self):
         self.clear()
@@ -148,7 +144,7 @@ class PamsApp(tk.Tk):
         for widget in self.content.winfo_children():
             widget.destroy()
 
-    # shared widgets
+    #  shared widgets 
 
     def _make_treeview(self, parent, columns, rows, widths=None):
         tree = ttk.Treeview(parent, columns=columns, show="headings", height=16)
@@ -163,7 +159,7 @@ class PamsApp(tk.Tk):
     def _error(self, exc):
         messagebox.showerror("Error", str(exc))
 
-    # Front-desk screens
+    #  Front-desk screens 
 
     def screen_register_tenant(self):
         self.clear_content()
@@ -320,7 +316,7 @@ class PamsApp(tk.Tk):
             data, widths=[40, 100, 140, 90, 60, 70, 90]
         )
 
-    # Finance screens
+    #  Finance screens 
 
     def screen_generate_invoice(self):
         self.clear_content()
@@ -416,7 +412,7 @@ class PamsApp(tk.Tk):
         tk.Label(self.content, text=text, font=("Consolas", 12), justify="left",
                  pady=20).pack(anchor="w")
 
-    # Maintenance screens 
+    #  Maintenance screens 
 
     def screen_maintenance_open(self):
         self.clear_content()
@@ -468,7 +464,7 @@ class PamsApp(tk.Tk):
 
         tk.Button(form, text="Resolve", command=submit).grid(row=4, column=1, sticky="w", pady=10)
 
-    #  ADMIN screen
+    #  Administrator screens 
 
     def screen_apartment_admin(self):
         self.clear_content()

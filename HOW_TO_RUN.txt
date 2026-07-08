@@ -38,14 +38,14 @@ different menus (role-based access control).
 
     Username            Password     Role               Branch
     ------------------  -----------  -----------------  ----------
-    fdesk.bristol        Pass123!     FrontDeskStaff      Bristol
-    fdesk.cardiff         Pass123!     FrontDeskStaff      Cardiff
-    finance.london        Pass123!     FinanceManager      London
-    maint.manchester        Pass123!     MaintenanceStaff    Manchester
-    admin.bristol          Pass123!     Administrator       Bristol
-    manager.hq             Pass123!     Manager             London
+    fdesk.bristol        Password     FrontDeskStaff      Bristol
+    fdesk.cardiff        Password     FrontDeskStaff      Cardiff
+    finance.london       Password     FinanceManager      London
+    maint.manchester     Password     MaintenanceStaff    Manchester
+    admin.bristol        Password     Administrator       Bristol
+    manager.hq           Password     Manager             London
 
-All demo passwords are: Pass123!
+All demo passwords are: Password
 (Passwords are never stored in plain text in the database — they are
 hashed with PBKDF2-HMAC-SHA256 and a unique per-user salt. The values
 above are only the plain-text passwords used to log in via the GUI.)
@@ -72,7 +72,7 @@ WHAT YOU CAN DO IN EACH ROLE
 Use "Log out" in the sidebar to switch users without restarting the app.
 
 
-RUNNING THE AUTOMATED TESTS (Element 3 evidence)
+RUNNING THE AUTOMATED TESTS
 ---------------------------------------------------
     python3 -m unittest discover -s tests -v
 

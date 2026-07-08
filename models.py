@@ -2,10 +2,10 @@ from datetime import datetime
 import validators as v
 
 
-#  Users and user roles 
+#  Users & roles (inheritance hierarchy) 
 
 class User:
-    #Base class for all system users. Concrete roles subclass this
+    """Base class for all system users. Concrete roles subclass this."""
 
     ROLE_NAME = "User"
 
@@ -56,14 +56,14 @@ ROLE_CLASSES = {
 
 
 def build_user(role: str, **kwargs) -> User:
-    #Factory that instantiates the correct User subclass for a given role
+    """Factory that instantiates the correct User subclass for a given role."""
     cls = ROLE_CLASSES.get(role)
     if cls is None:
         raise v.ValidationError(f"Unknown role '{role}'")
     return cls(**kwargs)
 
 
-#  Tenant & Student calculations
+#  Tenant & Student (inheritance) 
 
 MAX_YEARS_BY_LEVEL = {"Undergraduate": 2, "Masters": 2, "PhD": 4}
 STUDENT_DISCOUNT_RATE = 0.20
@@ -143,7 +143,7 @@ class Student(Tenant):
             )
 
 
-#  Apartment calculations
+#  Apartment 
 
 class Apartment:
     VALID_STATUS = {"available", "occupied", "maintenance"}
@@ -189,8 +189,7 @@ class Lease:
             raise v.ValidationError("termination_date must be before the lease end_date")
         notice_days = (datetime.strptime(termination_date, "%Y-%m-%d") -
                        datetime.today()).days
-        # Penalty still applies per the business rule even if notice is short;
-        # we surface a warning rather than blocking, since front-desk staff need to be able to record what actually happened.
+        # Penalty still applies per the business rule even if notice is short
         self.termination_penalty = tenant.early_termination_penalty(monthly_rent)
         self.termination_date = termination_date
         self.status = "terminated"

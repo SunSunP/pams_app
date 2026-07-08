@@ -27,7 +27,7 @@ Demo logins (username / password), one per role:
 | admin.bristol    | Administrator    | Bristol    |
 | manager.hq       | Manager          | London     |
 
-Password for every account: `Pass123!`
+Password for every account: `Password`
 
 ## Architecture
 
@@ -59,7 +59,7 @@ gui_app.py          Tkinter desktop GUI. Thin presentation layer only — it
 main.py             Application entry point.
 ```
 
-## Key Requirements
+## Key Features
 
 - **Account / User management**: five roles (FrontDeskStaff, FinanceManager,
   MaintenanceStaff, Administrator, Manager) implemented as a Python

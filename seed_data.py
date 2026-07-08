@@ -7,25 +7,25 @@ BRANCHES = ["Bristol", "Cardiff", "London", "Manchester"]
 
 USERS = [
     # username, password, full_name, email, role, branch
-    ("fdesk.bristol", "Pass123!", "Alice Front", "alice.front@paragon.co.uk", "FrontDeskStaff", "Bristol"),
-    ("fdesk.cardiff", "Pass123!", "Owen Reece", "owen.reece@paragon.co.uk", "FrontDeskStaff", "Cardiff"),
-    ("finance.london", "Pass123!", "Priya Shah", "priya.shah@paragon.co.uk", "FinanceManager", "London"),
-    ("maint.manchester", "Pass123!", "Sam Doyle", "sam.doyle@paragon.co.uk", "MaintenanceStaff", "Manchester"),
-    ("admin.bristol", "Pass123!", "Helen Cross", "helen.cross@paragon.co.uk", "Administrator", "Bristol"),
-    ("manager.hq", "Pass123!", "David Kelly", "david.kelly@paragon.co.uk", "Manager", "London"),
+    ("fdesk.bristol", "Password", "Alice Front", "alice.front@paragon.co.uk", "FrontDeskStaff", "Bristol"),
+    ("fdesk.cardiff", "Password", "Owen Reece", "owen.reece@paragon.co.uk", "FrontDeskStaff", "Cardiff"),
+    ("finance.london", "Password", "Priya Shah", "priya.shah@paragon.co.uk", "FinanceManager", "London"),
+    ("maint.manchester", "Password", "Sam Doyle", "sam.doyle@paragon.co.uk", "MaintenanceStaff", "Manchester"),
+    ("admin.bristol", "Password", "Helen Cross", "helen.cross@paragon.co.uk", "Administrator", "Bristol"),
+    ("manager.hq", "Password", "David Kelly", "david.kelly@paragon.co.uk", "Manager", "London"),
 ]
 
 TENANTS = [
     # ni, name, phone, email, occupation, refs, branch, is_student, study_level, offer_letter
-    ("QQ123456C", "John Carter", "07911123456", "john.carter@example.com",
+    ("AB123456C", "John Carter", "07911123456", "john.carter@example.com",
      "Accountant", "Previous landlord reference on file", "Bristol", False, None, None),
-    ("QQ234567C", "Maria Lopez", "07911234567", "maria.lopez@example.com",
+    ("AC234567C", "Maria Lopez", "07911234567", "maria.lopez@example.com",
      "Nurse", "Employer reference on file", "Cardiff", False, None, None),
-    ("QQ345678C", "Tom Fletcher", "07911345678", "tom.fletcher@example.com",
+    ("AE345678C", "Tom Fletcher", "07911345678", "tom.fletcher@example.com",
      "Undergraduate student", "University reference", "London", True, "Undergraduate", "UCL-OFFER-2025-0114"),
-    ("QQ456789C", "Aisha Khan", "07911456789", "aisha.khan@example.com",
+    ("AG456789C", "Aisha Khan", "07911456789", "aisha.khan@example.com",
      "Master's student", "University reference", "Manchester", True, "Masters", "UOM-OFFER-2025-0876"),
-    ("QQ567890C", "Liam O'Brien", "07911567890", "liam.obrien@example.com",
+    ("AH567890C", "Liam O'Brien", "07911567890", "liam.obrien@example.com",
      "PhD student", "University reference", "Bristol", True, "PhD", "UOB-OFFER-2025-0341"),
 ]
 

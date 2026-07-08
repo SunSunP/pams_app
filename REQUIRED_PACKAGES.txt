@@ -7,7 +7,7 @@ the Python standard library, so nothing needs to be installed with pip.
 Standard library modules used (all bundled with Python 3.10+):
   - sqlite3      (database)
   - tkinter       (desktop GUI - on Linux this may need installing
-                   separately via the OS package manager, see note below)
+                   separately via the OS package manager)
   - hashlib, hmac (password hashing / security)
   - os, re, functools, datetime  (general utilities, validation)
 
@@ -19,17 +19,3 @@ with no packages installed for this project:
     pip     24.0
 
 This confirms zero third-party packages are required to run PAMS.
-
-Note on Tkinter:
-Tkinter ships with the standard Python installer on Windows and macOS.
-On some Linux distributions it is packaged separately from Python itself
-(this is an OS packaging decision, not a pip dependency). If
-`python3 main.py` reports "No module named tkinter", install it with:
-
-    sudo apt install python3-tk        # Debian/Ubuntu
-    sudo dnf install python3-tkinter   # Fedora
-
-Development/testing tooling (not required to RUN the software):
-  - Python's built-in `unittest` module was used for the Element 3 test
-    suite (tests/). This is also part of the standard library — no
-    installation needed.

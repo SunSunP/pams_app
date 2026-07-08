@@ -29,7 +29,6 @@ class TestPasswordHashing(unittest.TestCase):
 
     def test_empty_password_still_produces_a_hash_not_an_exception(self):
         # An empty password should be rejected at the GUI/form-validation
-        # level, but hash_password itself must not crash if called.
         pw_hash, salt = sec.hash_password("")
         self.assertTrue(sec.verify_password("", pw_hash, salt))
         self.assertFalse(sec.verify_password("anything", pw_hash, salt))

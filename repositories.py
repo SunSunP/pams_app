@@ -352,7 +352,7 @@ class BillingRepository:
         return payment
 
     def refresh_late_invoices(self):
-        #Marks any pending invoice past its due date as 'late' 
+        """Marks any pending invoice past its due date as 'late' (Element 6)."""
         conn = db.get_connection()
         today = datetime.today().strftime("%Y-%m-%d")
         cur = conn.execute(

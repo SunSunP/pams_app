@@ -20,8 +20,6 @@ class RepositoryTestCase(unittest.TestCase):
         db.init_db(reset=True)
 
         # Import repositories AFTER patching DB_PATH so its module-level
-        # `import database as db` reference still points at the same module
-        # object (patching db.DB_PATH affects every importer of database.py).
         import repositories as repo
         import models as m
         import security as sec
@@ -73,7 +71,7 @@ class RepositoryTestCase(unittest.TestCase):
 
 
 class _AdminBootstrap:
-    #Stand-in user with Administrator role, used only to seed test fixtures
+    """Stand-in user with Administrator role, used only to seed test fixtures."""
     role = "Administrator"
 
 

@@ -5,7 +5,7 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pams.db")
 
 
 def get_connection():
-    #Return a new SQLite connection with foreign keys enabled.
+    """Return a new SQLite connection with foreign keys enabled."""
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
 
 
 def init_db(reset: bool = False):
-    #Create the database schema. If reset is True, delete any existing file first
+    """Create the database schema. If reset is True, delete any existing file first."""
     if reset and os.path.exists(DB_PATH):
         os.remove(DB_PATH)
     conn = get_connection()

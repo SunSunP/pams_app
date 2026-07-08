@@ -19,14 +19,11 @@ def hash_password(plain_password: str, salt: bytes = None) -> tuple:
 def verify_password(plain_password: str, stored_hash_hex: str, salt_hex: str) -> bool:
     salt = bytes.fromhex(salt_hex)
     candidate_hash, _ = hash_password(plain_password, salt)
-    # Constant-time comparison to avoid timing problems
+    # Constant-time comparison to avoid timing errors
     return hmac.compare_digest(candidate_hash, stored_hash_hex)
 
 
-#  Role-based access control (RBAC)
-
-# Each role is mapped to the set of actions it is permitted to perform.
-# Action names are referenced from the GUI layer / repositories before performing a sensitive operation.
+#  Role-based access  
 
 PERMISSIONS = {
     "FrontDeskStaff": {
@@ -55,7 +52,7 @@ PERMISSIONS = {
 
 
 class PermissionError_(Exception):
-    #Raised when a user attempts an action outside their role's permissions
+    """Raised when a user attempts an action outside their role's permissions."""
     pass
 
 
@@ -64,9 +61,11 @@ def has_permission(role: str, action: str) -> bool:
 
 
 def requires_role(action: str):
-    #Decorator used on repository / service methods to enforce RBAC.
-    #The decorated function must accept a `current_user` keyword/positional argument that exposes a `.role` attribute.
-    
+    """Decorator used on repository / service methods to enforce RBAC.
+
+    The decorated function must accept a `current_user` keyword/positional
+    argument that exposes a `.role` attribute.
+    """
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
