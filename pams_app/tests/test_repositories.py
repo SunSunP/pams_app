@@ -5,7 +5,7 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pams_app.database as db
+import database as db
 
 
 class RepositoryTestCase(unittest.TestCase):
@@ -20,10 +20,10 @@ class RepositoryTestCase(unittest.TestCase):
         db.init_db(reset=True)
 
         # Import repositories AFTER patching DB_PATH so its module-level
-        import pams_app.repositories as repo
-        import pams_app.models as m
-        import pams_app.security as sec
-        import pams_app.validators as v
+        import repositories as repo
+        import models as m
+        import security as sec
+        import validators as v
         self.repo = repo
         self.m = m
         self.sec = sec
@@ -39,27 +39,27 @@ class RepositoryTestCase(unittest.TestCase):
 
         # seed minimal users for tests
         self.frontdesk = self.user_repo.create_user(
-            "test.frontdesk", "Pass123!", "Test Frontdesk",
+            "test.frontdesk", "Password", "Test Frontdesk",
             "frontdesk@example.com", "FrontDeskStaff", "Bristol",
             current_user=_AdminBootstrap()
         )
         self.finance = self.user_repo.create_user(
-            "test.finance", "Pass123!", "Test Finance",
+            "test.finance", "Password", "Test Finance",
             "finance@example.com", "FinanceManager", "Bristol",
             current_user=_AdminBootstrap()
         )
         self.maintenance = self.user_repo.create_user(
-            "test.maint", "Pass123!", "Test Maintenance",
+            "test.maint", "Password", "Test Maintenance",
             "maint@example.com", "MaintenanceStaff", "Bristol",
             current_user=_AdminBootstrap()
         )
         self.admin = self.user_repo.create_user(
-            "test.admin", "Pass123!", "Test Admin",
+            "test.admin", "Password", "Test Admin",
             "admin@example.com", "Administrator", "Bristol",
             current_user=_AdminBootstrap()
         )
         self.manager = self.user_repo.create_user(
-            "test.manager", "Pass123!", "Test Manager",
+            "test.manager", "Password", "Test Manager",
             "manager@example.com", "Manager", "Bristol",
             current_user=_AdminBootstrap()
         )
@@ -77,7 +77,7 @@ class _AdminBootstrap:
 
 class TestUserRepository(RepositoryTestCase):
     def test_authenticate_with_correct_credentials_succeeds(self):
-        user = self.user_repo.authenticate("test.frontdesk", "Pass123!")
+        user = self.user_repo.authenticate("test.frontdesk", "Password")
         self.assertIsNotNone(user)
         self.assertEqual(user.role, "FrontDeskStaff")
 
@@ -86,13 +86,13 @@ class TestUserRepository(RepositoryTestCase):
         self.assertIsNone(user)
 
     def test_authenticate_with_unknown_username_fails(self):
-        user = self.user_repo.authenticate("nobody", "Pass123!")
+        user = self.user_repo.authenticate("nobody", "Password")
         self.assertIsNone(user)
 
     def test_non_administrator_cannot_create_users(self):
         with self.assertRaises(self.sec.PermissionError_):
             self.user_repo.create_user(
-                "rogue.user", "Pass123!", "Rogue User", "rogue@example.com",
+                "rogue.user", "Password", "Rogue User", "rogue@example.com",
                 "Administrator", "Bristol", current_user=self.frontdesk
             )
 

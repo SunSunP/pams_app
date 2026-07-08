@@ -1,7 +1,7 @@
 from datetime import date, timedelta
-import pams_app.database as db
-import pams_app.security as sec
-import pams_app.repositories as repo
+import database as db
+import security as sec
+import repositories as repo
 
 BRANCHES = ["Bristol", "Cardiff", "London", "Manchester"]
 

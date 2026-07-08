@@ -4,26 +4,26 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pams_app.security as sec
+import security as sec
 
 
 class TestPasswordHashing(unittest.TestCase):
     def test_correct_password_verifies(self):
-        pw_hash, salt = sec.hash_password("Pass123!")
-        self.assertTrue(sec.verify_password("Pass123!", pw_hash, salt))
+        pw_hash, salt = sec.hash_password("Password")
+        self.assertTrue(sec.verify_password("Password", pw_hash, salt))
 
     def test_wrong_password_fails(self):
-        pw_hash, salt = sec.hash_password("Pass123!")
+        pw_hash, salt = sec.hash_password("Password")
         self.assertFalse(sec.verify_password("WrongPassword", pw_hash, salt))
 
     def test_password_is_never_stored_in_plain_text(self):
-        pw_hash, salt = sec.hash_password("Pass123!")
-        self.assertNotEqual(pw_hash, "Pass123!")
-        self.assertNotIn("Pass123!", pw_hash)
+        pw_hash, salt = sec.hash_password("Password")
+        self.assertNotEqual(pw_hash, "Password")
+        self.assertNotIn("Password", pw_hash)
 
     def test_same_password_produces_different_hash_with_different_salt(self):
-        hash1, salt1 = sec.hash_password("Pass123!")
-        hash2, salt2 = sec.hash_password("Pass123!")
+        hash1, salt1 = sec.hash_password("Password")
+        hash2, salt2 = sec.hash_password("Password")
         self.assertNotEqual(salt1, salt2)
         self.assertNotEqual(hash1, hash2)
 

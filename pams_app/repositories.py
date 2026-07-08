@@ -1,8 +1,8 @@
 from datetime import datetime
-import pams_app.database as db
-import pams_app.models as m
-import pams_app.security as sec
-import pams_app.validators as v
+import database as db
+import models as m
+import security as sec
+import validators as v
 
 
 #  Users 

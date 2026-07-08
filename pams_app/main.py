@@ -1,6 +1,6 @@
 import os
-from pams_app.gui_app import PamsApp
-from pams_app.database import DB_PATH
+from gui_app import PamsApp
+from database import DB_PATH
 
 
 def main():

@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 
-import pams_app.repositories as repo
-import pams_app.validators as v
-import pams_app.security as sec
+import repositories as repo
+import validators as v
+import security as sec
 
 BRANCHES = ["Bristol", "Cardiff", "London", "Manchester"]
 ROLES = ["FrontDeskStaff", "FinanceManager", "MaintenanceStaff", "Administrator", "Manager"]

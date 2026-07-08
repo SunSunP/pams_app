@@ -1,5 +1,5 @@
 from datetime import datetime
-import pams_app.validators as v
+import validators as v
 
 
 #  Users & roles (inheritance hierarchy) 
