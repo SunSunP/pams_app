@@ -71,11 +71,34 @@ def validate_date_range(start: str, end: str):
         raise ValidationError("end_date must be after start_date")
 
 
+KNOWN_BRANCHES = {"Bristol", "Cardiff", "London", "Manchester"}
+
+KNOWN_BRANCHES = {"Bristol", "Cardiff", "London", "Manchester"}
+
 def validate_branch(value: str) -> str:
-    allowed = {"Bristol", "Cardiff", "London", "Manchester"}
-    if value not in allowed:
-        raise ValidationError(f"branch_location must be one of {allowed}, got '{value}'")
+    if value not in KNOWN_BRANCHES:
+        raise ValidationError(f"branch_location must be one of {KNOWN_BRANCHES}, got '{value}'")
     return value
+
+def register_branch(city_name: str) -> str:
+    """Validate and register a brand new city as a known branch."""
+    if not city_name or not city_name.strip():
+        raise ValidationError("City name must not be empty")
+    city_name = city_name.strip().title()
+    if city_name in KNOWN_BRANCHES:
+        raise ValidationError(f"'{city_name}' is already a known branch")
+    KNOWN_BRANCHES.add(city_name)
+    return city_name
+
+def register_branch(city_name: str) -> str:
+    """Validate and register a brand new city as a known branch."""
+    if not city_name or not city_name.strip():
+        raise ValidationError("City name must not be empty")
+    city_name = city_name.strip().title()
+    if city_name in KNOWN_BRANCHES:
+        raise ValidationError(f"'{city_name}' is already a known branch")
+    KNOWN_BRANCHES.add(city_name)
+    return city_name
 
 
 def validate_choice(value, allowed: set, field_name: str):

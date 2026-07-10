@@ -167,6 +167,33 @@ class ApartmentRepository:
         conn.commit()
         conn.close()
 
+class BranchRepository:
+    @sec.requires_role("expand_to_new_city")
+    def expand_to_new_city(self, city_name, starter_apartment_count=3, current_user=None):
+        city_name = v.register_branch(city_name)
+        try:
+            starter_apartment_count = int(starter_apartment_count)
+        except (TypeError, ValueError):
+            raise v.ValidationError("starter_apartment_count must be a whole number")
+        if starter_apartment_count < 0:
+            raise v.ValidationError("starter_apartment_count cannot be negative")
+
+        conn = db.get_connection()
+        conn.execute(
+            "INSERT INTO branches (branch_location, created_date) VALUES (?, DATE('now'))",
+            (city_name,)
+        )
+        created_ids = []
+        for _ in range(starter_apartment_count):
+            cur = conn.execute(
+                "INSERT INTO apartments (branch_location, apartment_type, monthly_rent, "
+                "num_rooms, student_eligible, status) VALUES (?,?,?,?,?,'available')",
+                (city_name, "Two-bedroom house", 850.00, 2, 1)
+            )
+            created_ids.append(cur.lastrowid)
+        conn.commit()
+        conn.close()
+        return city_name, created_ids
 
 #  Leases 
 

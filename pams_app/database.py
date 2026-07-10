@@ -13,6 +13,11 @@ def get_connection():
 
 
 SCHEMA = """
+CREATE TABLE IF NOT EXISTS branches (
+    branch_location TEXT PRIMARY KEY,
+    created_date    TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS users (
     user_id         INTEGER PRIMARY KEY AUTOINCREMENT,
     username        TEXT UNIQUE NOT NULL,
@@ -23,15 +28,13 @@ CREATE TABLE IF NOT EXISTS users (
     role            TEXT NOT NULL CHECK (role IN
                         ('FrontDeskStaff','FinanceManager','MaintenanceStaff',
                          'Administrator','Manager')),
-    branch_location TEXT NOT NULL CHECK (branch_location IN
-                        ('Bristol','Cardiff','London','Manchester')),
+    branch_location TEXT NOT NULL REFERENCES branches(branch_location),
     is_active       INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS apartments (
     apartment_id      INTEGER PRIMARY KEY AUTOINCREMENT,
-    branch_location    TEXT NOT NULL CHECK (branch_location IN
-                        ('Bristol','Cardiff','London','Manchester')),
+    branch_location    TEXT NOT NULL REFERENCES branches(branch_location),
     apartment_type     TEXT NOT NULL,
     monthly_rent       REAL NOT NULL CHECK (monthly_rent > 0),
     num_rooms          INTEGER NOT NULL CHECK (num_rooms > 0),
@@ -55,8 +58,7 @@ CREATE TABLE IF NOT EXISTS tenants (
                         ('Undergraduate','Masters','PhD') OR study_level IS NULL),
     offer_letter_ref TEXT,
     paired_tenant_id INTEGER REFERENCES tenants(tenant_id),
-    branch_location TEXT NOT NULL CHECK (branch_location IN
-                        ('Bristol','Cardiff','London','Manchester')),
+    branch_location    TEXT NOT NULL REFERENCES branches(branch_location),
     registered_date TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_tenants_branch ON tenants(branch_location);
@@ -129,6 +131,11 @@ def init_db(reset: bool = False):
         os.remove(DB_PATH)
     conn = get_connection()
     conn.executescript(SCHEMA)
+    for b in ("Bristol", "Cardiff", "London", "Manchester"):
+        conn.execute(
+            "INSERT OR IGNORE INTO branches (branch_location, created_date) VALUES (?, DATE('now'))",
+            (b,)
+        )
     conn.commit()
     conn.close()
 

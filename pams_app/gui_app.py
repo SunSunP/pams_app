@@ -108,6 +108,9 @@ class PamsApp(tk.Tk):
         self.maintenance_repo = repo.MaintenanceRepository()
         self.billing_repo = repo.BillingRepository()
         self.report_repo = repo.ReportRepository()
+        self.branch_repo = repo.BranchRepository()
+
+
 
         self.show_login()
 
@@ -867,12 +870,37 @@ class PamsApp(tk.Tk):
                  font=self.font_heading).pack(anchor="w")
         tk.Label(
             self.content,
-            text="This is a placeholder workflow: in a full release this screen would\n"
-                 "create a new branch_location entry and provision an Administrator\n"
-                 "account for it. Currently supported branches are:\n"
-                 f"{', '.join(BRANCHES)}",
-            justify="left", pady=20
+            text=f"Currently supported branches: {', '.join(sorted(v.KNOWN_BRANCHES))}",
+            justify="left", fg=self.theme["muted"], pady=10
         ).pack(anchor="w")
+
+        form = tk.Frame(self.content, pady=10)
+        form.pack(anchor="w")
+
+        tk.Label(form, text="New city name").grid(row=0, column=0, sticky="e", pady=3)
+        city_entry = tk.Entry(form, width=32)
+        city_entry.grid(row=0, column=1, pady=3)
+
+        tk.Label(form, text="Starter apartments to create").grid(row=1, column=0, sticky="e", pady=3)
+        count_entry = tk.Entry(form, width=32)
+        count_entry.insert(0, "3")
+        count_entry.grid(row=1, column=1, pady=3)
+
+        def submit():
+            try:
+                city_name, apartment_ids = self.branch_repo.expand_to_new_city(
+                    city_entry.get(), count_entry.get(), current_user=self.current_user
+                )
+                BRANCHES.append(city_name)
+                messagebox.showinfo(
+                    "Branch created",
+                    f"'{city_name}' added with {len(apartment_ids)} starter apartment(s)."
+                )
+                self.screen_expand_city()
+            except (v.ValidationError, sec.PermissionError_, ValueError) as e:
+                self._error(e)
+
+        tk.Button(form, text="Expand", command=submit).grid(row=2, column=1, sticky="w", pady=10)
 
 
 if __name__ == "__main__":
