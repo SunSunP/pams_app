@@ -36,6 +36,7 @@ class RepositoryTestCase(unittest.TestCase):
         self.maintenance_repo = repo.MaintenanceRepository()
         self.billing_repo = repo.BillingRepository()
         self.report_repo = repo.ReportRepository()
+        self.branch_repo = repo.BranchRepository()
 
         # seed minimal users for tests
         self.frontdesk = self.user_repo.create_user(
@@ -284,6 +285,24 @@ class TestReportRepository(RepositoryTestCase):
             set(summary.keys()), {"collected_rent", "pending_rent", "maintenance_cost"}
         )
 
+class TestBranchRepository(RepositoryTestCase):
+       def test_manager_can_expand_to_new_city(self):
+        city_name, apartment_ids = self.branch_repo.expand_to_new_city(
+            "Newport", 3, current_user=self.manager
+        )
+        self.assertEqual(city_name, "Newport")
+        self.assertEqual(len(apartment_ids), 3)
+
+       def test_duplicate_city_name_rejected(self):
+           self.branch_repo.expand_to_new_city("Swansea", 3, current_user=self.manager)
+           with self.assertRaises(self.v.ValidationError):
+               self.branch_repo.expand_to_new_city("Swansea", 2, current_user=self.manager)
+
+       def test_frontdesk_cannot_expand_to_new_city(self):
+           with self.assertRaises(self.sec.PermissionError_):
+               self.branch_repo.expand_to_new_city(
+                   "Swansea", 3, current_user=self.frontdesk
+               )
 
 if __name__ == "__main__":
     unittest.main()
