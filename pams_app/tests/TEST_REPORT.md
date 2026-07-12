@@ -32,27 +32,27 @@ machine without extra setup.)
 
 ## Coverage summary
 
-| Test file | What it covers | Test count |
-|---|---|---|
-| `test_validators.py` | Field-level validation: NI number, email, phone, dates, positive/non-negative numbers, branch names — including malformed input and an SQL-injection-style string | 28 |
-| `test_models.py` | Object construction rejects bad data (negative rent, zero rooms, invalid status/priority/study level, end date before start date, etc.); business rule calculations (20% student discount, 10% early-termination penalty, 5%/0% maintenance cost split, 2/4-year max lease duration) | 39 |
-| `test_security.py` | Password hashing never stores plain text, wrong password fails, salts differ per user, RBAC permission table and `@requires_role` decorator both block and allow correctly | 16 |
-| `test_repositories.py` | End-to-end flows against a disposable temp SQLite database: tenant registration, lease creation/termination, maintenance resolution, invoice generation/payment, late-invoice detection — each combined with an RBAC check that the wrong role is blocked | 33 |
-| **Total** | | **116** |
+| Test file              | What it covers                                                                                                                                                                                                                                                                       | Test count |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `test_validators.py`   | Field-level validation: NI number, email, phone, dates, positive/non-negative numbers, branch names — including malformed input and an SQL-injection-style string                                                                                                                    | 28         |
+| `test_models.py`       | Object construction rejects bad data (negative rent, zero rooms, invalid status/priority/study level, end date before start date, etc.); business rule calculations (20% student discount, 10% early-termination penalty, 5%/0% maintenance cost split, 2/4-year max lease duration) | 39         |
+| `test_security.py`     | Password hashing never stores plain text, wrong password fails, salts differ per user, RBAC permission table and `@requires_role` decorator both block and allow correctly                                                                                                           | 16         |
+| `test_repositories.py` | End-to-end flows against a disposable temp SQLite database: tenant registration, lease creation/termination, maintenance resolution, invoice generation/payment, late-invoice detection — each combined with an RBAC check that the wrong role is blocked                            | 33         |
+| **Total**              |                                                                                                                                                                                                                                                                                      | **116**    |
 
 All 116 tests currently pass. Full console output is saved in
 `test_run_output.txt` in this folder — screenshot that file (or your own
 terminal re-run of it) as evidence for the report, alongside the GUI
 screenshots from the manual checklist.
 
-## Example test case (the format requested in the brief)
+## Example test case
 
-| Test ID | Class / method under test | Input | Expected output | Actual output |
-|---|---|---|---|---|
-| TC-01 | `models.Apartment.__init__` | `monthly_rent = -100` | Raises `ValidationError("monthly_rent must be greater than zero, got -100.0")` | Raised as expected — see `test_negative_rent_rejected` in `test_models.py` and `test_run_output.txt` |
-| TC-02 | `models.Student.validate_lease_duration` | Undergraduate student, lease from `2026-01-01` to `2029-06-30` (~3.5 years; max allowed is 2) | Raises `ValidationError` describing the duration exceeded | Raised as expected — see `test_undergraduate_lease_exceeding_two_years_rejected` |
-| TC-03 | `repositories.BillingRepository.record_payment` | Invoice amount £650.00, payment submitted = £500.00 | Raises `ValidationError("Payment amount 500.0 is less than the invoice amount 650.0")` | Raised as expected — see `test_underpayment_rejected` |
-| TC-04 | `repositories.TenantRepository.register_tenant` | Called with `current_user` = a `FinanceManager` | Raises `PermissionError_` (RBAC blocks the wrong role) | Raised as expected — see `test_finance_manager_cannot_register_tenant` |
+| Test ID | Class / method under test                       | Input                                                                                         | Expected output                                                                        | Actual output                                                                                        |
+| ------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| TC-01   | `models.Apartment.__init__`                     | `monthly_rent = -100`                                                                         | Raises `ValidationError("monthly_rent must be greater than zero, got -100.0")`         | Raised as expected — see `test_negative_rent_rejected` in `test_models.py` and `test_run_output.txt` |
+| TC-02   | `models.Student.validate_lease_duration`        | Undergraduate student, lease from `2026-01-01` to `2029-06-30` (~3.5 years; max allowed is 2) | Raises `ValidationError` describing the duration exceeded                              | Raised as expected — see `test_undergraduate_lease_exceeding_two_years_rejected`                     |
+| TC-03   | `repositories.BillingRepository.record_payment` | Invoice amount £650.00, payment submitted = £500.00                                           | Raises `ValidationError("Payment amount 500.0 is less than the invoice amount 650.0")` | Raised as expected — see `test_underpayment_rejected`                                                |
+| TC-04   | `repositories.TenantRepository.register_tenant` | Called with `current_user` = a `FinanceManager`                                               | Raises `PermissionError_` (RBAC blocks the wrong role)                                 | Raised as expected — see `test_finance_manager_cannot_register_tenant`                               |
 
 Use this table format (Test ID / class·method / input / expected / actual)
 as the template for the full test-case table in your report — every method
